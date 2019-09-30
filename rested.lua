@@ -79,27 +79,36 @@ function load_player_data(...)
 	-- print(AddonName .. " loaded for " .. playerName)
 end
 
+function tableLength(t)
+  local count = 0
+  for _ in pairs(t) do count = count + 1 end
+  return count
+end
+
 function print_player_data(...)
+  if (tableLength(RestedXP) < 2) then
+    print "RestedXP: log some alts on! No data to show"
+    return
+  end
   local red = "|cFFFF0000"
   local yellow = "|cFFFFFF00"
   local green = "|cFF00FF00"
   print(format("%sR%sested%sXP:|r", red, yellow, red))
   for storedGUID, data in pairs(RestedXP) do
-    local restColor = ""
-    local restPct = data["restedxp_at_logout"] / data["xptol_at_logout"]
-    local restAtLO = " (zzz)"
-    if (data["resting_at_logout"] == false) then
-      restAtLO = ""
-      restColor = red
+    if (storedGUID ~= playerGUID) then
+      local restColor = ""
+      local restPct = data["restedxp_at_logout"] / data["xptol_at_logout"]
+      local restAtLO = " (zzz)"
+      if (data["resting_at_logout"] == false) then
+        restAtLO = ""
+        restColor = red
+      end
+      if (restPct > 1.25) then
+        restColor = green
+      end
+      local output = format("%s%s: %0.0f%% rested, %s to full rest%s|r", restColor, data["name"], restPct * 100, disp_time(data["secToMax"]), restAtLO)
+      print(output)
     end
-    if (restPct > 1.25) then
-      restColor = green
-    end
-    local output = format("%s%s: %0.0f%% rested, %s to full rest%s|r", restColor, data["name"], restPct * 100, disp_time(data["secToMax"]), restAtLO)
-    print(output)
-
-    -- print(format("cxp: %d, lxp: %d, rpct: %0.0f%%, toMax: %0.0f%%, ttm: %s, resting: %s", currentXP, levelXP, restPct * 100, toMaxRestXP * 100, dhmsToMax, tostring(isRest)))
-
   end
 end
 
