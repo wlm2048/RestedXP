@@ -42,7 +42,7 @@ function RestedXP_OnLoad()
       get_rested_data(...)
       print_player_data(...)
 		elseif event == "PLAYER_LOGOUT" then
-      get_rested_data(...)
+			get_rested_data(...)
 		end
   end)
 
@@ -74,6 +74,7 @@ function update_player_info(...)
 end
 
 function load_player_data(...)
+	RestedXP = copyDefaults({}, RestedXP)
   if not RestedXP[playerGUID] then RestedXP[playerGUID] = {} end
   update_player_info(...)
 	-- print(AddonName .. " loaded for " .. playerName)
