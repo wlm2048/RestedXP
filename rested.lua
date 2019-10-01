@@ -91,6 +91,20 @@ function tableLength(t)
   return count
 end
 
+function getKeysSortedByRestTime(...)
+  local tbl = ...
+  local keys = {}
+  for key in pairs(tbl) do
+    table.insert(keys, key)
+  end
+
+  table.sort(keys, function(a, b)
+    return tbl[a]["secToMax"] < tbl[b]["secToMax"]
+  end)
+
+  return keys
+end
+
 function print_player_data(...)
   if (tableLength(RestedXP) < 2) then
     print "RestedXP: log some alts on! No data to show"
@@ -100,7 +114,9 @@ function print_player_data(...)
   local yellow = "|cFFFFFF00"
   local green = "|cFF00FF00"
   print(format("%sR%sested%sXP:|r", red, yellow, red))
-  for storedGUID, data in pairs(RestedXP) do
+	local sorted_keys = getKeysSortedByRestTime(RestedXP)
+	for _, storedGUID in ipairs(sorted_keys) do
+		data = RestedXP[storedGUID]
 		local itsame = ""
     if (storedGUID == playerGUID) then itsame = "* " end
     local restColor = ""
@@ -121,6 +137,7 @@ end
 function update_resting(...)
 	-- apparently, on PLAYER_LOGOUT this is set to false, so we have to check at other times
 	isResting = IsResting()
+	get_rested_data()
 end
 
 function get_rested_data()
