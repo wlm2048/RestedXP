@@ -33,20 +33,16 @@ function RestedXP_OnLoad()
 	local frame = CreateFrame("Frame")
 	frame:RegisterEvent("ADDON_LOADED")
   frame:RegisterEvent("PLAYER_LOGIN")
-	frame:RegisterEvent("PLAYER_LOGOUT")
   frame:RegisterEvent("PLAYER_UPDATE_RESTING")
   frame:SetScript("OnEvent", function(self, event, ...)
-		if event == "ADDON_LOADED" and ... == AddonName then
+		if (event == "ADDON_LOADED" and ... == AddonName) then
 			load_player_data(...)
 			self:UnregisterEvent("ADDON_LOADED")
-    elseif event == "PLAYER_LOGIN" then
+    elseif (event == "PLAYER_LOGIN") then
       load_player_data(...)
 			update_resting(...)
-      get_rested_data(...)
       print_player_data(...)
-		elseif event == "PLAYER_LOGOUT" then
-			get_rested_data(...)
-		elseif event == "PLAYER_UPDATE_RESTING" then
+		elseif (event == "PLAYER_UPDATE_RESTING") then
 			update_resting(...)
 		end
   end)
@@ -143,6 +139,7 @@ end
 function get_rested_data()
   if not RestedXP[playerGUID]["name"] then update_player_info() end
   local restXP = GetXPExhaustion()
+	if not (restXP) then restXP = 0 end
   local currentXP = UnitXP("player")
   local levelXP = UnitXPMax("player")
   local restPct = restXP / levelXP
