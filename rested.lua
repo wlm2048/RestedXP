@@ -32,16 +32,17 @@ end
 function RestedXP_OnLoad()
 	local frame = CreateFrame("Frame")
 	frame:RegisterEvent("ADDON_LOADED")
-  frame:RegisterEvent("PLAYER_LOGIN")
+	frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   frame:RegisterEvent("PLAYER_UPDATE_RESTING")
   frame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "ADDON_LOADED" and ... == AddonName) then
 			load_player_data(...)
 			self:UnregisterEvent("ADDON_LOADED")
-    elseif (event == "PLAYER_LOGIN") then
+    elseif (event == "PLAYER_ENTERING_WORLD") then
       load_player_data(...)
 			update_resting(...)
       print_player_data(...)
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 		elseif (event == "PLAYER_UPDATE_RESTING") then
 			update_resting(...)
 		end
