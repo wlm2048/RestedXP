@@ -6,6 +6,7 @@ local max_delay = 20
 
 local playerGUID = UnitGUID("player")
 local playerName = ""
+local isResting = false
 
 function copyDefaults(src, dst)
 	if not src then return { } end
@@ -32,17 +33,21 @@ function RestedXP_OnLoad()
 	local frame = CreateFrame("Frame")
 	frame:RegisterEvent("ADDON_LOADED")
   frame:RegisterEvent("PLAYER_LOGIN")
-  frame:RegisterEvent("PLAYER_LOGOUT")
+	frame:RegisterEvent("PLAYER_LOGOUT")
+  frame:RegisterEvent("PLAYER_UPDATE_RESTING")
   frame:SetScript("OnEvent", function(self, event, ...)
 		if event == "ADDON_LOADED" and ... == AddonName then
 			load_player_data(...)
 			self:UnregisterEvent("ADDON_LOADED")
     elseif event == "PLAYER_LOGIN" then
       load_player_data(...)
+			update_resting(...)
       get_rested_data(...)
       print_player_data(...)
 		elseif event == "PLAYER_LOGOUT" then
 			get_rested_data(...)
+		elseif event == "PLAYER_UPDATE_RESTING" then
+			update_resting(...)
 		end
   end)
 
@@ -96,21 +101,26 @@ function print_player_data(...)
   local green = "|cFF00FF00"
   print(format("%sR%sested%sXP:|r", red, yellow, red))
   for storedGUID, data in pairs(RestedXP) do
-    if (storedGUID ~= playerGUID) then
-      local restColor = ""
-      local restPct = data["restedxp_at_logout"] / data["xptol_at_logout"]
-      local restAtLO = " (zzz)"
-      if (data["resting_at_logout"] == false) then
-        restAtLO = ""
-        restColor = red
-      end
-      if (restPct > 1.25) then
-        restColor = green
-      end
-      local output = format("%s%s: %0.0f%% rested, %s to full rest%s|r", restColor, data["name"], restPct * 100, disp_time(data["secToMax"]), restAtLO)
-      print(output)
+		local itsame = ""
+    if (storedGUID == playerGUID) then itsame = "* " end
+    local restColor = ""
+    local restPct = data["restedxp_at_logout"] / data["xptol_at_logout"]
+    local restAtLO = " (zzz)"
+    if (data["resting_at_logout"] == false) then
+      restAtLO = ""
+      restColor = red
     end
-  end
+    if (restPct > 1.25) then
+      restColor = green
+    end
+    local output = format("%s%s%s: %0.0f%% rested, %s to full rest%s|r", itsame, restColor, data["name"], restPct * 100, disp_time(data["secToMax"]), restAtLO)
+    print(output)
+    end
+end
+
+function update_resting(...)
+	-- apparently, on PLAYER_LOGOUT this is set to false, so we have to check at other times
+	isResting = IsResting()
 end
 
 function get_rested_data()
@@ -119,19 +129,18 @@ function get_rested_data()
   local currentXP = UnitXP("player")
   local levelXP = UnitXPMax("player")
   local restPct = restXP / levelXP
-  local isRest = IsResting()
   local maxRestXP = 1.5
   local toMaxRestXP = maxRestXP - restPct
   -- each 5% rested takes 8 hours (when "resting") else 32 hours
   local restingHours = 8
-  if not isRest then restingHours = 32 end
+  if not isResting then restingHours = 32 end
   local secToMax = (toMaxRestXP / 0.05) *  (restingHours * 60 * 60)
 
   if not RestedXP[playerGUID] then RestedXP[playerGUID] = {} end
   RestedXP[playerGUID] = {
     ["name"] = playerName,
     ["logout_time"] = time(),
-    ["resting_at_logout"] = isRest,
+    ["resting_at_logout"] = isResting,
     ["restedxp_at_logout"] = restXP,
     ["xp_at_logout"] = currentXP,
     ["xptol_at_logout"] = levelXP,
