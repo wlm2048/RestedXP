@@ -2,5 +2,6 @@
 ## Title: RestedXP
 ## Notes: Tracks and estimates Rested XP
 ## Author: wlm2048
-## SavedVariables: RestedXP
-rested.lua
+## SavedVariables: RestedXPDB
+src\init.xml
+src\init.lua
