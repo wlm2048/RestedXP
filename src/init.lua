@@ -15,9 +15,12 @@ local main = CreateFrame("Frame")
 RestedXP.main = main
 
 main:RegisterEvent("ADDON_LOADED")
+
 main:RegisterEvent("PLAYER_ENTERING_WORLD")
+
 main:RegisterEvent("PLAYER_UPDATE_RESTING")
-main:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+main:RegisterEvent("UPDATE_EXHAUSTION")
+
 main:SetScript("OnEvent", function(self, event, ...)
   if (event == "ADDON_LOADED" and ... == AddonName) then
 		Chat:Init()
@@ -27,11 +30,7 @@ main:SetScript("OnEvent", function(self, event, ...)
 		RXP:Update(event, ...)
 		RXP:Show()
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-  elseif (event == "PLAYER_UPDATE_RESTING") then
-		RXP:Update(event, ...)
-	elseif (event == "CHAT_MSG_COMBAT_XP_GAIN") then
-		RXP:Update(event, ...)
-	elseif (event == "PLAYER_LOGOUT") then
+  elseif (event == "PLAYER_UPDATE_RESTING" or event == "UPDATE_EXHAUSTION") then
 		RXP:Update(event, ...)
   end
 end)

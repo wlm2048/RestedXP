@@ -24,9 +24,14 @@ function RXP:Init()
   RestedXPDB[self.guid]["name"] = name
 end
 
-function RXP:Update(...)
-  local event = select(1, ...)
-  -- Chat:Print("Update event: " .. event .. " data: " .. ...)
+function RXP:Update(event, ...)
+  if (Debug.Is("DEBUG")) then
+    local data = ...
+    if (data == nil) then
+      data = "nil"
+    end
+    Chat:Print(format("Update event: %s, data: %s", event, tostring(data)))
+  end
   -- xpToLevel, restedXP, isResting, epoch
   local restedXP = GetXPExhaustion()
   if (not restedXP) then restedXP = 0 end
@@ -37,9 +42,9 @@ function RXP:Update(...)
     RestedXPDB[self.guid]["isResting"] = IsResting()
   end
   RestedXPDB[self.guid]["epoch"]     = GetServerTime()
-  -- Chat:Print(format("x2l: %d, rxp: %d, ir: %s, epoch: %d", RestedXPDB[self.guid]["xpToLevel"], RestedXPDB[self.guid]["restedXP"], tostring(RestedXPDB[self.guid]["isResting"]), RestedXPDB[self.guid]["epoch"]))
-  -- local rxp, stm, eam = Utils:CalculateRXP(RestedXPDB[self.guid])
-  -- Chat:Print(format("rxp: %0.4f, stm: %d, eam: %d", rxp, stm, eam))
+  if (Debug.Is("DEBUG")) then
+    Chat:Print(format("x2l: %d, rxp: %d, ir: %s, epoch: %d", RestedXPDB[self.guid]["xpToLevel"], RestedXPDB[self.guid]["restedXP"], tostring(RestedXPDB[self.guid]["isResting"]), RestedXPDB[self.guid]["epoch"]))
+  end
 end
 
 function RXP:Show()

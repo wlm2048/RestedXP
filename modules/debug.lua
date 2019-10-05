@@ -21,10 +21,9 @@ Debug.Levels = {
 }
 
 function Debug:SetDebugLevel(level)
-  Debug.level = level
-  RestedXP["debug"] = tostring(level)
+  RestedXPDB["debug"] = tostring(level)
 end
 
 Debug.Is = function(level)
-  return tonumber(Debug.level) >= tonumber(Debug.Levels[level])
+  return tonumber(RestedXPDB["debug"]) >= tonumber(Debug.Levels[level])
 end

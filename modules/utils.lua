@@ -39,9 +39,9 @@ function Utils:CalculateRXP(t)
     local tdiff = now - t["epoch"]
     local additionalRestedXP = (tdiff / restingSeconds) * (0.05 * t["xpToLevel"])
     restedPct = (t["restedXP"] + additionalRestedXP) / t["xpToLevel"]
-    if (restedPct >= maxRestXP) then restedPct = maxRestXP end
   end
 
+  if (restedPct >= maxRestXP) then restedPct = maxRestXP end
   local toMaxRestXP = maxRestXP - restedPct
 
   local secondsToMax = (toMaxRestXP / 0.05) * restingSeconds
